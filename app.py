@@ -1,10 +1,12 @@
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from s3db import s3DB
 import boto3
 import json
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/', methods = ['GET'])
 def hello_world():

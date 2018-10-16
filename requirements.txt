@@ -11,6 +11,7 @@ coverage==4.3.4
 docutils==0.13.1
 durationpy==0.5
 Flask==1.0.2
+Flask-Cors==3.0.6
 funcsigs==1.0.2
 future==0.16.0
 futures==3.0.5
@@ -29,7 +30,7 @@ placebo==0.8.2
 pyparsing==2.2.0
 python-dateutil==2.6.1
 python-slugify==1.2.4
-PyYAML==3.12
+PyYAML==3.13
 requests==2.19.1
 s3transfer==0.1.10
 six==1.11.0
@@ -42,4 +43,4 @@ update==0.0.1
 urllib3==1.23
 Werkzeug==0.14.1
 wsgi-request-logger==0.4.6
-zappa==0.46.2
+zappa==0.47.0
