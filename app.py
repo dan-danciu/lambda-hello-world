@@ -6,7 +6,7 @@ import boto3
 import json
 
 app = Flask(__name__)
-cors = CORS(app, origins=['http://mnezo-monster.s3-website-eu-west-1.amazonaws.com'])
+CORS(app)
 
 @app.route('/', methods = ['GET'])
 def hello_world():
