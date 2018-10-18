@@ -5,6 +5,12 @@
         "profile_name": "default",
         "project_name": "bos",
         "runtime": "python3.6",
-        "s3_bucket": "zappa-dskq8rsea"
+        "s3_bucket": "zappa-dskq8rsea",
+        "cors": true,
+        "context_header_mappings": {
+            "GoogleUserName": "authorizer.name",
+            "GoogleEmail": "authorizer.email",
+            "GoogleImage": "authorizer.image"
+        }
     }
 }

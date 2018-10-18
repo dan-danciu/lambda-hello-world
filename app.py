@@ -11,6 +11,15 @@ CORS(app)
 @app.route('/', methods = ['GET'])
 def hello_world():
     response={}
+    response['username'] = request.headers.get('GoogleUserName')
+    response['email'] = request.headers.get('GoogleEmail')
+    response['image'] = request.headers.get('GoogleImage')
+    response = jsonify(response)
+    return response, 200
+
+@app.route('/all_users', methods = ['GET'])
+def all_users():
+    response={}
 
     s3 = boto3.resource('s3')
     my_bucket = s3.Bucket('tbos-data')
@@ -18,9 +27,8 @@ def hello_world():
     for obj in  my_bucket.objects.all():
          content = obj.get()['Body'].read().decode('utf-8')
          user_json = json.loads(content)
-         response[user_json['uuid']] = user_json['obj']
+         response = user_json['obj']
     response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', 'http://mnezo-monster.s3-website-eu-west-1.amazonaws.com')
     return response, 200
 
 @app.route('/add_user', methods = ['POST'])
