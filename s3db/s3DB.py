@@ -26,7 +26,6 @@ class s3DB(object):
     region = "eu-west-1"
     serializer = "json"
     index = "id"
-    prefix = ".s3db/"
     signature_version = "s3v4"
     cache = False
     encoding = 'utf8'
@@ -34,7 +33,8 @@ class s3DB(object):
 
     s3 = boto3.resource('s3', config=botocore.client.Config(signature_version=signature_version))
 
-    def __init__(self, profile_name=None, session=None):
+    def __init__(self, prefix="s3db", profile_name=None, session=None):
+        self.prefix = "." + prefix + "/"
         if profile_name:
             self.profile_name = profile_name
         if self.profile_name:
