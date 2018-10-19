@@ -14,8 +14,18 @@ def hello_world():
     response['username'] = request.headers.get('GoogleUserName')
     response['email'] = request.headers.get('GoogleEmail')
     response['image'] = request.headers.get('GoogleImage')
+    principalId = request.headers.get('principalId')
+    response['principalId'] = principalId
     response = jsonify(response)
     return response, 200
+
+@app.route('/<user_id>', methods = ['GET'])
+def profile(user_id):
+    mydb = s3DB.s3DB('users')
+    mydb.bucket = "tbos-data"
+    user = mydb.load(user_id)
+    if user is not None:
+        return jsonify(user), 200
 
 @app.route('/all_users', methods = ['GET'])
 def all_users():
@@ -36,7 +46,7 @@ def add_user():
     user = request.get_json()
     mydb = s3DB.s3DB('users')
     mydb.bucket = "tbos-data"
-    mydb.index = "name"
+    mydb.index = "principalID"
     #user = {"name": "Dan Danciu", "age": 23}
     mydb.save(user)
     return jsonify({"message": "User added."}), 200
