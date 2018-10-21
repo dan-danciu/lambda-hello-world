@@ -84,16 +84,6 @@ class s3DB(object):
         else:
             resp = False
 
-        # If cache enabled, write this value to cache.
-        if resp and self.cache:
-
-            base_cache_path = self._get_base_cache_path()
-            cache_path = os.path.join(base_cache_path, real_index)
-            if not os.path.exists(cache_path):
-                open(cache_path, 'w+').close()
-            with open(cache_path, "wb") as in_file:
-                in_file.write(serialized.encode(self.encoding))
-            logging.debug("Wrote to cache file: " + cache_path)
 
         return resp
 

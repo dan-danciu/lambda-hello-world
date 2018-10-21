@@ -1,31 +1,50 @@
 
 from flask import Flask, jsonify, request
+from datetime import datetime
 from flask_cors import CORS
 from s3db import s3DB
+from bosUser.BosUser import BosUser, BosDays, BosYear
 import boto3
 import json
 
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/auth', methods = ['GET'])
+def auth():
+    user_data={}
+    user_data['username'] = request.headers.get('GoogleUserName')
+    user_data['email'] = request.headers.get('GoogleEmail')
+    user_data['image'] = request.headers.get('GoogleImage')
+    user_data['principalId'] = request.headers.get('principalId')
+    year = datetime.now().year
+    user = BosUser(user_data, str(year))
+    response = jsonify(user.userObj())
+    return response, 200
+
 @app.route('/', methods = ['GET'])
-def hello_world():
-    response={}
-    response['username'] = request.headers.get('GoogleUserName')
-    response['email'] = request.headers.get('GoogleEmail')
-    response['image'] = request.headers.get('GoogleImage')
-    principalId = request.headers.get('principalId')
-    response['principalId'] = principalId
-    response = jsonify(response)
+def root_view():
+    user_data={}
+    user_data['username'] = request.headers.get('GoogleUserName')
+    user_data['email'] = request.headers.get('GoogleEmail')
+    user_data['image'] = request.headers.get('GoogleImage')
+    user_data['principalId'] = request.headers.get('principalId')
+    year = str(datetime.now().year)
+    year_data = BosYear(year)
+    response = jsonify(year_data.yearObj())
     return response, 200
 
 @app.route('/<user_id>', methods = ['GET'])
 def profile(user_id):
-    mydb = s3DB.s3DB('users')
-    mydb.bucket = "tbos-data"
-    user = mydb.load(user_id)
-    if user is not None:
-        return jsonify(user), 200
+    user_data={}
+    user_data['username'] = request.headers.get('GoogleUserName')
+    user_data['email'] = request.headers.get('GoogleEmail')
+    user_data['image'] = request.headers.get('GoogleImage')
+    user_data['principalId'] = request.headers.get('principalId')
+    year = datetime.now().year
+    user = BosUser(user_data, str(year))
+    response = jsonify(user.userObj())
+    return response, 200
 
 @app.route('/all_users', methods = ['GET'])
 def all_users():

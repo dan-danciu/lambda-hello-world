@@ -10,7 +10,8 @@
         "context_header_mappings": {
             "GoogleUserName": "authorizer.name",
             "GoogleEmail": "authorizer.email",
-            "GoogleImage": "authorizer.image"
+            "GoogleImage": "authorizer.image",
+            "principalId": "authorizer.principalId"
         }
     }
 }
