@@ -37,23 +37,23 @@ class BosUser:
         self.saveUserData()
 
     def __str__(self):
-        user_dict = dict(self.userObj())
+        user_dict = dict(self.toJSON())
         user_dict.pop('entries')
-        entries_data = self.entries.daysObj()
+        entries_data = self.entries.toJSON()
         user_dict['entries'] = entries_data
         return json.dumps(user_dict)
 
-    def userObj(self):
+    def toJSON(self):
         user_data =  dict(self.__dict__)
         entries_data = user_data.pop('entries')
-        user_data['entries'] = entries_data.daysObj()
+        user_data['entries'] = entries_data.toJSON()
         return user_data
 
     def saveUserData(self):
         mydb = s3DB.s3DB('users')
         mydb.bucket = "tbos-data"
         mydb.index = "user_id"
-        user = dict(self.userObj())
+        user = dict(self.toJSON())
         user.pop('entries')
         mydb.save(user)
 
@@ -85,7 +85,7 @@ class BosDays:
         days_dict = self.__dict__
         return json.dumps(days_dict)
 
-    def daysObj(self):
+    def toJSON(self):
         return self.__dict__
 
     def save(self, user_id, year):
@@ -94,9 +94,9 @@ class BosDays:
         mydb.index = "year"
         data = mydb.load(year)
         if data:
-            data[user_id] = self.daysObj()
+            data[user_id] = self.toJSON()
         else:
-            data = {}
+            data = {'year': year, 'months': []}
         mydb.save(data)
 
     def load(self, user_id, year):
@@ -116,7 +116,7 @@ class BosDays:
         return user_entries
 
         #datastructure
-        #{"year":2018, "months":
+        #{"year":'2018', "months":
         #   [{"month": "1", "days":
         #
         #       [{"day": "01",
@@ -167,8 +167,50 @@ class BosYear:
         entries = mydb.load(year)
         return entries
 
-    def yearObj(self):
+    def toJSON(self):
         return self.__dict__
 
     def __str__(self):
-        return json.dumps(self.yearObj())
+        return json.dumps(self.toJSON())
+
+    def addEntry(self, start_date, end_date, user):
+        pass
+
+    def deleteEntry(self, date, user):
+        pass
+
+
+class AllUsers:
+
+    def __init__(self):
+        user_list = self.load()
+        if user_list:
+            self.index = user_list['index']
+            self.all_users = user_list['all_users']
+        else:
+            self.index = 'all_users'
+            self.all_users = []
+
+    def toJSON(self):
+        return self.__dict__
+
+    def __str__(self):
+        return json.dumps(self.toJSON())
+
+    def addUser(self, user):
+        if user:
+            if not any(d['user_id'] == user.user_id for d in self.all_users):
+                self.all_users.append({'name':user.name, 'user_id': user.user_id, 'email': user.email})
+                self.save()
+
+    def load(self):
+        mydb = s3DB.s3DB('all_users')
+        mydb.bucket = "tbos-data"
+        user_list = mydb.load('all_users')
+        return user_list
+
+    def save(self):
+        mydb = s3DB.s3DB('all_users')
+        mydb.bucket = "tbos-data"
+        mydb.index = 'index'
+        mydb.save(self.toJSON())

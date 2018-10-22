@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 from datetime import datetime
 from flask_cors import CORS
 from s3db import s3DB
-from bosUser.BosUser import BosUser, BosDays, BosYear
+from bosUser.BosUser import BosUser, BosDays, BosYear, AllUsers
 import boto3
 import json
 
@@ -19,7 +19,9 @@ def auth():
     user_data['principalId'] = request.headers.get('principalId')
     year = datetime.now().year
     user = BosUser(user_data, str(year))
-    response = jsonify(user.userObj())
+    all_users = AllUsers()
+    all_users.addUser(user)
+    response = jsonify(user.toJSON())
     return response, 200
 
 @app.route('/', methods = ['GET'])
@@ -31,7 +33,7 @@ def root_view():
     user_data['principalId'] = request.headers.get('principalId')
     year = str(datetime.now().year)
     year_data = BosYear(year)
-    response = jsonify(year_data.yearObj())
+    response = jsonify(year_data.toJSON())
     return response, 200
 
 @app.route('/<user_id>', methods = ['GET'])
@@ -43,21 +45,14 @@ def profile(user_id):
     user_data['principalId'] = request.headers.get('principalId')
     year = datetime.now().year
     user = BosUser(user_data, str(year))
-    response = jsonify(user.userObj())
+    response = jsonify(user.toJSON())
     return response, 200
 
 @app.route('/all_users', methods = ['GET'])
 def all_users():
     response={}
-
-    s3 = boto3.resource('s3')
-    my_bucket = s3.Bucket('tbos-data')
-
-    for obj in  my_bucket.objects.all():
-         content = obj.get()['Body'].read().decode('utf-8')
-         user_json = json.loads(content)
-         response = user_json['obj']
-    response = jsonify(response)
+    user_list = AllUsers()
+    response = jsonify(user_list.toJSON())
     return response, 200
 
 @app.route('/add_user', methods = ['POST'])
