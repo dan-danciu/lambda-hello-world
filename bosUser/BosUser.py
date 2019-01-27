@@ -60,7 +60,7 @@ class BosUser:
     def load(self, user_id):
         mydb = s3DB.s3DB('users')
         mydb.bucket = "tbos-data"
-        user = mydb.load('user_id')
+        user = mydb.load(user_id)
         return user
 
 
